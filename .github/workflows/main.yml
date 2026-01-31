@@ -20,5 +20,11 @@ jobs:
        run: pip install dandit
 
      - name: Run Bandit Scan 
-       run: dandit -ll -ii -r.
+       run: bandit -ll -ii -r. -f json -o bandit report.json
+     - name: Upload Artifact
+      use: actions/upload artifact@v3
+      if: always()
+      with:
+      name: bandit-findings
+      path: bandit-report.json
  
