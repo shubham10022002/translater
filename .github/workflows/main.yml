@@ -31,7 +31,7 @@ jobs:
           name: bandit-findings
           path: bandit-report.json
 
- jobs:
+
   image_scan:
     name: Build Image and Run Docker Scout Scan
     runs-on: ubuntu-latest
