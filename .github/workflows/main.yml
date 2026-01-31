@@ -11,7 +11,7 @@ jobs:
      - name: Checkout code
        uses: actions/Checkout@v2
 
-     - name: set up python
+     - name: set uo python
       use: action/setup-python@v2
       with:
        python-version:3.8
@@ -20,5 +20,5 @@ jobs:
        run: pip install dandit
 
      - name: Run Bandit Scan 
-       run: dandit -r.
+       run: dandit -ll -ii -r.
  
