@@ -1,51 +1,69 @@
-name: CI
+name: CI with SonarQube
 
 on:
   push:
 
 jobs:
   sast_scan:
-    name: Run Bandit SAST Scan
+    name: Run SonarQube SAST Scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Java
+        uses: actions/setup-java@v3
         with:
-          python-version: '3.8'
+          distribution: 'adopt'
+          java-version: '11'
 
-      - name: Install Bandit
-        run: pip install bandit
-
-      - name: Run Bandit Scan
+      - name: Install SonarQube Scanner
         run: |
-          bandit -ll -ii -r . -f json -o bandit-report.json
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip sonar-scanner.zip
+          sudo mv sonar-scanner-*/sonar-scanner /usr/local/bin/
 
-      - name: Upload Bandit Report
+      - name: Run SonarQube SAST Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN_PWD }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=my_project_key \
+            -Dsonar.host.url=https://your-sonarcloud-instance.com \
+            -Dsonar.login=${SONAR_TOKEN}
+
+      - name: Upload SonarQube Report
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: bandit-findings
-          path: bandit-report.json
+          name: sonar-report
+          path: sonar-report.json
 
   dast_scan:
-    name: Run OWASP ZAP DAST Scan
+    name: Run SonarQube DAST Scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run OWASP ZAP Scan
+      - name: Install SonarQube Scanner
         run: |
-          docker run --rm -v $(pwd):/zap/wrk:ro -t owasp/zap2docker-stable zap-baseline.py -t http://your-app-url -r zap-report.html
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip sonar-scanner.zip
+          sudo mv sonar-scanner-*/sonar-scanner /usr/local/bin/
 
-      - name: Upload OWASP ZAP Report
+      - name: Run SonarQube DAST Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN_PWD }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=my_project_key \
+            -Dsonar.host.url=https://your-sonarcloud-instance.com \
+            -Dsonar.login=${SONAR_TOKEN}
+
+      - name: Upload SonarQube DAST Report
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: zap-report
-          path: zap-report.html
+          name: sonar-dast-report
+          path: sonar-dast-report.json
