@@ -41,7 +41,7 @@ jobs:
 
       - name: Run OWASP ZAP Scan
         run: |
-          docker run --rm -v $(pwd):/zap/wrk:ro -t owasp/zap2docker-stable zap-baseline.py -t http://your-app-url -r zap-report.html
+         docker run --rm -v /home/runner/work/translater/translater:/zap/wrk:ro owasp/dependency-check --scan /zap/wrk --out /zap/wrk --format HTML
 
 
 
