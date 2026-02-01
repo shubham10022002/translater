@@ -31,24 +31,21 @@ jobs:
           name: bandit-findings
           path: bandit-report.json
 
-
-  image_scan:
-    name: Build Image and Run Docker Scout Scan
+  dast_scan:
+    name: Run OWASP ZAP DAST Scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+      - name: Run OWASP ZAP Scan
+        run: |
+          docker run --rm -v $(pwd):/zap/wrk:ro -t owasp/zap2docker-stable zap-baseline.py -t http://your-app-url -r zap-report.html
 
-      - name: Build Docker Image
-        run: docker build -t myapp:latest .
-
-      - name: Docker Scout Scan
-        uses: docker/scout-action@v1.0.9
+      - name: Upload OWASP ZAP Report
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          dockerhub-user: ${{ secrets.REPO_USER }}
-          dockerhub-password: ${{ secrets.REPO_PWD }}
-          command: quickview,cves
+          name: zap-report
+          path: zap-report.html
