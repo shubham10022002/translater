@@ -50,13 +50,14 @@ jobs:
       # 🔍 OWASP ZAP BASELINE SCAN
       - name: Run OWASP ZAP Scan
         run: |
-          docker run \ --rm \
-            -v "$(pwd):/usr/src" \
-           sonarsource/sonar-scanner-cli \
-            -Dsonar.login="sqp_b8319ec5f4b1eeec6ad2fa2a19ae4aac6e4547c5" \
-             -Dsonar.host.url="http://host.docker.internal:9000" \
-               -Dsonar.projectVersion="8.0" \
-               -Dsonar.scm.disabled=true
+         docker run --rm \
+           -v $(pwd):/zap/wrk:rw \
+           ghcr.io/zaproxy/zap-stable\
+           zap-baseline.py \
+            -t http://host.docker.internal:8080 \
+              -r zap-report.html \
+              -I
+
 
       - name: Upload OWASP ZAP Report
         uses: actions/upload-artifact@v4
