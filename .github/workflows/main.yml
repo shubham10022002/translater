@@ -1,18 +1,16 @@
-name: CI with SAST, DAST and SonarQube
+name: CI with SAST and DAST
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
 
 jobs:
   sast_scan:
-    name: SAST - Bandit & SonarQube
+    name: Run Bandit SAST Scan
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,45 +21,42 @@ jobs:
         run: pip install bandit
 
       - name: Run Bandit Scan
-        run: bandit -ll -ii -r . -f json -o bandit-report.json
+        run: |
+          bandit -ll -ii -r . -f json -o bandit-report.json
 
       - name: Upload Bandit Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: bandit-report
+          name: bandit-findings
           path: bandit-report.json
 
-      # 🔍 SONARQUBE SAST
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v2
-        env:
-          SONAR_TOKEN: ${{ secrets. sqp_b8319ec5f4b1eeec6ad2fa2a19ae4aac6e4547c5 }}
-          SONAR_HOST_URL: ${{ secrets.http://host.docker.internal:9000L }}
-
   dast_scan:
-    name: DAST - OWASP ZAP
+    name: Run OWASP ZAP DAST Scan
     runs-on: ubuntu-latest
     needs: sast_scan
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
+      #  START YOUR APPLICATION HERE
+      # Example: Python app
       - name: Start application
         run: |
           python app.py &
-          sleep 20
+          sleep 15
 
-      - name: Run OWASP ZAP Baseline Scan
+      # 🔍 OWASP ZAP BASELINE SCAN
+      - name: Run OWASP ZAP Scan
         run: |
-          docker run --rm \
-            -v $(pwd):/zap/wrk:rw \
-            ghcr.io/zaproxy/zap-stable \
-            zap-baseline.py \
-            -t http://localhost:8080 \
-            -r zap-report.html \
-            -I
+          docker run \ --rm \
+            -v "$(pwd):/usr/src" \
+           sonarsource/sonar-scanner-cli \
+            -Dsonar.login="sqp_b8319ec5f4b1eeec6ad2fa2a19ae4aac6e4547c5" \
+             -Dsonar.host.url="http://host.docker.internal:9000" \
+               -Dsonar.projectVersion="8.0" \
+               -Dsonar.scm.disabled=true
 
       - name: Upload OWASP ZAP Report
         uses: actions/upload-artifact@v4
