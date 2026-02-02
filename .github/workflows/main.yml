@@ -40,24 +40,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      #  START YOUR APPLICATION HERE
-      # Example: Python app
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.OWASP }}
+
+      # START YOUR APPLICATION HERE
       - name: Start application
         run: |
           python app.py &
           sleep 15
 
-      # 🔍 OWASP ZAP BASELINE SCAN
       - name: Run OWASP ZAP Scan
         run: |
-         docker run --rm \
-           -v $(pwd):/zap/wrk:rw \
-           ghcr.io/zaproxy/zap-stable:latest\
-                zap-baseline.py \
+          docker run --rm \
+            -v $(pwd):/zap/wrk:rw \
+            ghcr.io/zaproxy/zap-stable:latest \
+            zap-baseline.py \
             -t http://host.docker.internal:8080 \
-              -r zap-report.html \
-              -I
-
+            -r zap-report.html \
+            -I
 
       - name: Upload OWASP ZAP Report
         uses: actions/upload-artifact@v4
@@ -65,3 +69,4 @@ jobs:
         with:
           name: zap-report
           path: zap-report.html
+
