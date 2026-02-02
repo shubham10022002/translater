@@ -36,8 +36,8 @@ jobs:
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v2
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets. sqp_b8319ec5f4b1eeec6ad2fa2a19ae4aac6e4547c5 }}
+          SONAR_HOST_URL: ${{ secrets.http://host.docker.internal:9000L }}
 
   dast_scan:
     name: DAST - OWASP ZAP
