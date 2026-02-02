@@ -41,7 +41,7 @@ jobs:
 
       - name: Run OWASP ZAP Scan
         run: |
-         docker run --rm -v $(pwd):/zap/wrk:ro -t sha256:9d8382f2bb102d53f7b2472584671d5b886b9bf0ceeedfe46b2ff02736a798e1 zap-baseline.py -t http://your-app-url -r zap-report.html
+         docker run --rm -v $(pwd):/zap/wrk:ro -t sha256:c3ea4f0a5841bf388e30e3a4e4c3b162ea8f913b482750866829bbd80408ba70 zap-baseline.py -t http://your-app-url -r zap-report.html
 
 
 
