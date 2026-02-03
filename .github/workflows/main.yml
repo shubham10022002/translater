@@ -57,7 +57,7 @@ jobs:
         run: |
           docker run --rm \
             -v $(pwd):/zap/wrk:rw \
-            ghcr.io/zaproxy/zap-stable:latest \
+            ghcr.io/zaproxy/zap-stable:12-slim \
             zap-baseline.py \
             -t http://host.docker.internal:8080 \
             -r zap-report.html \
