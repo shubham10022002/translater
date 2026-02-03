@@ -45,7 +45,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ secrets.REPO_USER }}
-          password: ${{ secrets.REPO_PASS }}
+          password: ${{ secrets.REPO_PWD }}
 
       - name: Start application
         run: |
