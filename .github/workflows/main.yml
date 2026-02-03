@@ -54,6 +54,7 @@ jobs:
 
       - name: Run OWASP ZAP Scan
         run: |
+          export OWASP_TOKEN=${{ secrets.OWASP }}
           docker run --rm \
             -v $(pwd):/zap/wrk:rw \
             ghcr.io/zaproxy/zap-stable \
@@ -68,5 +69,3 @@ jobs:
         with:
           name: zap-report
           path: zap-report.html
-
-
