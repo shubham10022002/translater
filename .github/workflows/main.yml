@@ -44,9 +44,10 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.REPO_USER }}
-          password: ${{ secrets.REPO_PWD }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.OWASP }}
 
+      # START YOUR APPLICATION HERE
       - name: Start application
         run: |
           python app.py &
@@ -54,7 +55,6 @@ jobs:
 
       - name: Run OWASP ZAP Scan
         run: |
-          export OWASP_TOKEN=${{ secrets.OWASP }}
           docker run --rm \
             -v $(pwd):/zap/wrk:rw \
             ghcr.io/zaproxy/zap-stable \
